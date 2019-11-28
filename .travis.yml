@@ -1,4 +1,5 @@
 ---
+env:
 language: python
 install:
   - pip install ansible-lint
@@ -9,6 +10,9 @@ install:
   - napalm-ansible --version
 jobs:
   include:
+    - stage: env
+      name: Printout environment variables
+      script: env
     - stage: yaml-lint
       name: yamllint all YAML files
       script: yamllint *.yml
