@@ -1,0 +1,58 @@
+---
+- name: Building configuration from data model
+  hosts: all
+  connection: local
+  gather_facts: false
+  tags: ['build', 'vaidate']
+  vars:
+      config_dir: "configs"
+      build_dir: "compiled"
+      hostname: "{{ inventory_hostname.split('.')[0] }}"
+  pre_tasks:
+      - name: Set global facts, cleanup old files and directories
+        set_fact:
+            host_dir: "{{ config_dir }}/{{ build_dir }}/{{ hostname }}"
+        changed_when: false
+        check_mode: true
+      - name: Clearing old build configuration files
+        file: path={{ host_dir }} state=absent
+        changed_when: false
+        check_mode: false
+      - name: Rebuild build configuration directories
+        file: path={{ host_dir }} state=directory
+        changed_when: false
+        check_mode: false
+
+- name: Building configuration components
+  hosts: all
+  connection: local
+  tags: ['build', 'validate']
+  vars:
+      model_dir: "datamodel"
+  vars_files:
+      - "{{ model_dir }}/node-model.yml"
+  roles:
+      - base
+      - common
+      - interfaces
+      - routing
+
+  post_tasks:
+      - name: Assembling configuration components
+        tags: ['build', 'validate']
+        assemble:
+            src: "{{ host_dir }}"
+            dest: "{{ host_dir }}/assembled.conf"
+        changed_when: false
+      - name: Compare data model with config on device, report the differences
+        tags: ['validate']
+        napalm_install_config:
+            hostname: "{{ inventory_hostname }}"
+            username: "{{ username }}"
+            password: "{{ password }}"
+            dev_os: "{{ os }}"
+            config_file: "{{ host_dir }}/assembled.conf"
+            replace_config: false
+            get_diffs: true
+            commit_changes: false
+            diff_file: "{{ host_dir }}/config-diff"

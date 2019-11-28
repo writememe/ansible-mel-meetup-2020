@@ -1,0 +1,36 @@
+#########################
+
+Executive Summary Validation Report
+Hostname: {{ inventory_hostname }}
+
+Passed all compliance checks?
+{% if val_results.compliance_report.complies|bool %}
+YES
+{% else %}
+NO
+{% endif %} 
+get_facts - Compliance Check
+{% if val_results.compliance_report.get_facts.complies|bool %}
+PASS
+{% else %}
+FAIL
+{% endif %}
+get_interfaces - Compliance Check
+{% if val_results.compliance_report.get_interfaces.complies|bool %}
+PASS
+{% else %}
+FAIL
+{% endif %}
+get_interfaces_ip - Compliance Check
+{% if val_results.compliance_report.get_interfaces_ip.complies|bool %}
+PASS
+{% else %}
+FAIL
+{% endif %}
+get_bgp_neighbors - Compliance Check
+{% if val_results.compliance_report.get_bgp_neighbors.complies|bool %}
+PASS
+{% else %}
+FAIL
+{% endif %}
+

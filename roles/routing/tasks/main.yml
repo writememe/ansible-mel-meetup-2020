@@ -1,0 +1,5 @@
+---
+- name: Compiling routing configuration
+  template:
+    src: "{{ os }}/routing.j2"
+    dest: "{{ host_dir }}/15-routing.conf"

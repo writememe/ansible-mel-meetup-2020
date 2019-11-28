@@ -1,0 +1,16 @@
+{% set node = nodes[inventory_hostname] %}
+
+{% for interface in node.interfaces %}
+default interface {{ interface.name }}
+interface {{ interface.name }}
+{% if interface.name.startswith("Et")  %}
+ no shutdown
+ no switchport
+{%  elif interface.name.startswith("Gi")  %}
+ no shutdown
+{% endif %}
+ description {{ interface.description }}
+ ip address {{ interface.ip | ipaddr('address') }} {{ interface.ip | ipaddr('netmask') }}
+!
+{% endfor %}
+

@@ -1,0 +1,35 @@
+{% set node = nodes[inventory_hostname] %}
+
+routing-options {
+   router-id {{ node.rid | ipaddr('address') }};
+   autonomous-system {{ node.asn }};
+}
+
+policy-options {
+    policy-statement {{ node.connected_rm.name }} {
+        from interface {{ node.connected_rm.interface }}.0;
+        then accept;
+    }
+    policy-statement IMPORT-ALL {
+        from protocol bgp;
+        then accept;
+    }
+}
+
+
+{% for entry in node.peers %}
+protocols {
+    bgp {
+        log-updown;
+        import IMPORT-ALL;
+        export {{ node.connected_rm.name }};
+        group {{ entry.description }} {
+        description {{ entry.description }};
+        authentication-key {{ node.auth }};
+        neighbor {{ entry.ip }} {
+            peer-as {{ entry.asn }} ;
+            }
+       }
+   }
+}
+{% endfor %}

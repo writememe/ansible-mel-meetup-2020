@@ -1,0 +1,23 @@
+{% for entry in syslog_servers %}
+system {
+    syslog {
+        host {{ entry }} {
+           port 514;
+        }
+    }
+}
+{% endfor %}
+{% for entry in ntp_servers %}
+system {
+   ntp {
+      server {{ entry }};
+   }
+}
+{% endfor %}
+{% for entry in dns_servers %}
+system {
+   name-server {
+       {{ entry }};
+   }
+}
+{% endfor %}

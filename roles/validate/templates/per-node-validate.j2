@@ -1,0 +1,44 @@
+# Dynamically generated NAPALM validation rules
+---
+{% set node = nodes[inventory_hostname] %}
+- get_facts:
+    fqdn: {{ inventory_hostname }}
+    hostname: {{ node.hostname }}
+- get_bgp_neighbors:
+    global:
+      peers:
+{% for peer in node.peers %}
+        {{ peer.ip }}:
+{%      if node.os == 'nxos' %}
+{%      elif node.os != 'nxos' %}
+          description: {{ peer.description }}
+{%      endif %}
+          is_enabled: true
+          is_up: true
+          local_as: {{ node.asn }}
+          remote_as: {{ peer.asn }}
+{%   endfor %}
+      router_id: {{ node.rid | ipaddr('address') }}
+- get_interfaces:
+{% for interface in node.interfaces %}
+{%  if node.os == 'junos' %}
+    {{ interface.name }}.0:
+{%  elif node.os != 'junos' %}
+    {{ interface.name }}:
+{%  endif %}
+      description: {{ interface.description }}
+      is_enabled: true
+      is_up: true
+{% endfor %}
+- get_interfaces_ip:
+{% for interface in node.interfaces %}
+{%   if node.os == 'junos' %}
+    {{ interface.name }}.0:
+{%   elif node.os != 'junos' %}
+    {{ interface.name }}:
+{%  endif %}
+      ipv4:
+        {{ interface.ip | ipaddr('address') }}:
+          prefix_length: {{ interface.ip | ipaddr('prefix') }}
+{% endfor %}
+

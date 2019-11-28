@@ -1,0 +1,18 @@
+{% set node = nodes[inventory_hostname] %}
+
+route-map {{ node.connected_rm.name }} permit 20
+   description "Redistributing {{ node.connected_rm.interface }}"
+   match interface {{ node.connected_rm.interface }}
+
+no router bgp
+router bgp {{ node.asn }}
+   router-id {{ node.rid | ipaddr('address') }}
+   bgp log-neighbor-changes
+   redistribute connected route-map {{ node.connected_rm.name }}
+{% for entry in node.peers %}
+   neighbor {{ entry.ip }} remote-as {{ entry.asn }}
+   neighbor {{ entry.ip }} description {{ entry.description }}
+   neighbor {{ entry.ip }} password 0 {{ node.auth }}
+   neighbor {{ entry.ip }} maximum-routes 12000
+{% endfor %}
+!

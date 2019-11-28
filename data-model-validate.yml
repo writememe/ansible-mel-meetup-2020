@@ -1,0 +1,111 @@
+---
+- name: Compiled automated validation files
+  hosts: all
+  connection: local
+  vars:
+    validate_dir: "{{ playbook_dir }}/validate/files"
+    datamodel_dir: "{{ playbook_dir }}/datamodel"
+    raw_report_dir: "{{ playbook_dir }}/validate/reports"
+  tasks:
+    - name: Prepare validate datamodel directory
+      set_fact:
+        val_dir: "{{ validate_dir }}/{{ inventory_hostname }}"
+      changed_when: false
+    - name: Ensure there are no files from previous runs
+      file:
+        path: "{{ val_dir }}"
+        state: absent
+      changed_when: false
+    - name: Create directory where assembled validation rule file is stored
+      file:
+        path: "{{ val_dir }}"
+        state: directory
+      changed_when: false
+    - name: Prepare reports directory
+      file:
+        path: "{{ raw_report_dir }}"
+        state: directory
+      changed_when: false
+      run_once: true
+
+- name: Create validation files, based on the datamodel
+  hosts: all
+  vars:
+    datamodel_dir: "{{ playbook_dir }}/datamodel"
+  connection: local
+  gather_facts: false
+  vars_files: ["{{ datamodel_dir }}/node-model.yml"]
+  roles:
+    - validate
+
+- name: Perform automated validation and produce compliance report
+  hosts: all
+  connection: local
+  vars:
+    val_dir: "validate/files"
+    debug_report_dir: "reports/debug"
+    report_dir: "reports"
+  tasks:
+    - name: Ensure that no report files are present from previous runs
+      file:
+        path: "{{ report_dir }}"
+        state: absent
+      changed_when: false
+      run_once: true
+    - name: Recreate report directory
+      file:
+        path: "{{ report_dir }}"
+        state: directory
+      changed_when: false
+      run_once: true
+    - name: Ensure that no debug report files are present from previous runs
+      file:
+        path: "{{ debug_report_dir }}"
+        state: absent
+      changed_when: false
+      run_once: true
+    - name: Recreate debug report directory
+      file:
+        path: "{{ debug_report_dir }}"
+        state: directory
+      run_once: true
+    - name: Use NAPALM to automatically validate configuration
+      napalm_validate:
+        hostname: "{{ inventory_hostname }}"
+        username: "{{ username }}"
+        dev_os: "{{ os }}"
+        password: "{{ password }}"
+        validation_file: "{{ val_dir }}/automated-validation.yml"
+      register: val_results
+      ignore_errors: true
+    - name: Dump results to debug files
+      delegate_to: localhost
+      copy: >
+        content="{{ val_results | to_nice_json }}"
+          dest="{{ debug_report_dir }}/{{ inventory_hostname }}-Report.json"
+    - name: Render Individual Summary Reports
+      template:
+        src: "templates/report-validation.j2"
+        dest: "{{ report_dir }}/{{ inventory_hostname }}-Summary-Report.txt"
+    - name: Remove old compiled summary report
+      file:
+        path: "{{ report_dir }}/All-Host-Validation-Report.txt"
+        state: absent
+      run_once: true
+    - name: Compile Individual summary reports into single report
+      assemble:
+        src: "{{ report_dir }}"
+        dest: "{{ report_dir }}/All-Host-Validation-Report.txt"
+      run_once: true
+    # Always display the successful compliance results
+    - name: Display compliance results
+      debug:
+        var: val_results.compliance_report.complies
+    # If a host fails compliance, fail the play and display the file to review
+    - name: Compliance check failure
+      fail:
+        msg: >
+              "{{ inventory_hostname }} failed compliance. Refer to the full
+              report at {{ debug_report_dir }}/{{ inventory_hostname }}
+              -Validation-Compliance-Report.json"
+      when: not val_results.compliance_report.complies

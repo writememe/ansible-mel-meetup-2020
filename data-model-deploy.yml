@@ -1,0 +1,83 @@
+---
+- name: Preparing directories and global facts
+  hosts: all
+  connection: local
+  vars:
+    config_dir: "configs"
+    build_dir: "compiled"
+    deploy_dir: "deployed"
+    debug_dir: "debugs"
+    hostname: "{{ inventory_hostname.split('.')[0] }}"
+  tasks:
+    - name: Set global facts
+      set_fact:
+        host_dir: "{{ config_dir }}/{{ build_dir }}/{{ hostname }}"
+        change_dir: "{{ config_dir }}/{{ deploy_dir }}"
+        debug_deploy_dir: "{{ debug_dir }}/{{ deploy_dir }}"
+      changed_when: false
+      check_mode: true
+    - name: Checking config directory is created
+      file: path={{ config_dir }} state=directory
+      check_mode: false
+      run_once: true
+    - name: Clearing old deployed configuration files
+      file: path={{ change_dir }} state=absent
+      changed_when: false
+      check_mode: false
+    - name: Rebuilding deployed directory
+      file: path={{ change_dir }} state=directory
+      check_mode: false
+      run_once: true
+    - name: Checking host directory is created
+      file: path={{ host_dir }} state=directory
+      changed_when: false
+      check_mode: false
+    - name: Checking that configuration file(s) for deployment exist
+      stat:
+        path: "{{ host_dir }}/assembled.conf"
+      register: config_file
+    - name: Checking for debug directory folder
+      file: path={{ debug_deploy_dir }} state=directory
+      check_mode: false
+      run_once: true
+      when: debug is defined
+    - name: Gather current time and format as a timestamp
+      command: "date +%Y-%m-%d-%H-%M-%S"
+      register: current_time
+      run_once: true
+      when: debug is defined
+    - name: Set time fact for debugging
+      set_fact:
+        time: "{{ current_time.stdout }}"
+      run_once: true
+      when: debug is defined
+    - name: Failure message, file does not exist
+      fail:
+        msg: >
+              "Configuration file {{ host_dir }}/assembled.conf does not exist.
+               Please review and resolve"
+      when: not config_file.stat.exists
+
+- name: Deploy configuration
+  hosts: all
+  vars:
+    hostname: "{{ inventory_hostname.split('.')[0] }}"
+  tags: ['deploy']
+  tasks:
+    - name: Deploying configuration
+      napalm_install_config:
+        hostname: "{{ inventory_hostname }}"
+        username: "{{ username }}"
+        password: "{{ password }}"
+        dev_os: "{{ os }}"
+        config_file: "{{ host_dir }}/assembled.conf"
+        replace_config: false
+        get_diffs: true
+        commit_changes: true
+        diff_file: "{{ change_dir }}/{{ hostname }}-deployed-config-diff"
+      register: debug_deployment
+    - name: Dump debug outputs for analysis, when requested
+      copy:
+        content: "{{ debug_deployment.msg }}"
+        dest: "{{ debug_deploy_dir }}/{{ hostname }}-{{ time }}.log"
+      when: debug is defined

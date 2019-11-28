@@ -1,0 +1,7 @@
+{% set node = nodes[inventory_hostname] %}
+
+system {
+    host-name {{ node.hostname }};
+    domain-name {{ ip_domain_name}};
+    time-zone {{ timezone }};
+    }

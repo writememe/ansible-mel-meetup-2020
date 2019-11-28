@@ -1,0 +1,65 @@
+# Automatically created from data model
+---
+{% macro internal_link( name,ip,description ) %}
+ - name: {{ name }}
+        ip: {{ ip }} 
+        description: {{ description }}{% endmacro %}
+{% macro peer_link( name,ip,asn,description ) %}
+ - ip: {{ ip }} 
+        asn: {{ asn }}
+        description: {{ description }}{% endmacro %}
+
+nodes:
+{% for node in nodes %}
+  {{ node.name }}:
+    hostname: {{ node.name.partition('.')[0] }}
+    mgmt: {{ node.mgmt }}
+    rid: {{ loopback_subnet |ipsubnet (32,(node.id | int )) }}
+    id: {{ node.id }}
+    os: {{ node.os }}
+    loopback_ip: {{ loopback_subnet |ipsubnet (32, (node.id | int )) }}
+    asn: {{ ( bgp_base_asn | int ) + ( node.id | int ) }}
+    auth: {{ node.auth }}
+
+    connected_rm:
+      name: {{ global_connected_rm }}
+{%  if node.os == 'ios' %}
+      interface: Loopback0
+{% elif node.os == 'junos' %}
+      interface: lo0
+{% elif node.os == 'eos' %}
+      interface: Loopback0
+{% elif node.os == 'nxos' %}
+      interface: loopback0
+{% endif %}
+
+    interfaces:
+{%   for link in fabric %}
+{%    if link.left == node.name %}
+     {{ internal_link(link.left_port,link.left_ip,link.left_description|default('To ' +  link.right + ' - ' + link.right_port)) }}
+{%    elif link.right == node.name %}
+     {{ internal_link(link.right_port,link.right_ip,link.right_description|default('To ' + link.left + ' - ' + link.left_port)) }}
+{%    endif %}
+{%   endfor %}
+{%  if node.os == 'ios' %}
+     {{ internal_link('Loopback0',loopback_subnet |ipsubnet (32, (node.id | int )),'Loopback Interface') }}
+{% elif node.os == 'junos' %}
+     {{ internal_link('lo0',loopback_subnet |ipsubnet (32, (node.id | int )),'Loopback_Interface') }}
+{% elif node.os == 'eos' %}
+     {{ internal_link('Loopback0',loopback_subnet |ipsubnet (32, (node.id | int )),'Loopback Interface') }}
+{% elif node.os == 'nxos' %}
+     {{ internal_link('loopback0',loopback_subnet |ipsubnet (32, (node.id | int )),'Loopback Interface') }}
+{% endif %}
+    
+    peers:
+{%   for peer in routing %}
+{%    if peer.left == node.name %}
+     {{ peer_link(peer.right,peer.right_ip,peer.right_as,peer.right|default('CONFIGURED_BY_ANSIBLE')) }}
+{%    elif peer.right == node.name %}
+     {{ peer_link(peer.left,peer.left_ip,peer.left_as,peer.left|default('CONFIGURED_BY_ANSIBLE')) }}
+{%    endif %}
+{%   endfor %}
+
+
+{% endfor %}
+

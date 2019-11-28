@@ -1,0 +1,18 @@
+{% set node = nodes[inventory_hostname] %}
+
+!
+service timestamps debug datetime msec
+service timestamps log datetime msec
+!
+service password-encryption
+!
+hostname {{ node.hostname }}
+!
+boot-start-marker
+boot-end-marker
+!
+ip domain name {{ ip_domain_name }}
+!
+ip ssh version 2
+!
+clock timezone {{ timezone }}

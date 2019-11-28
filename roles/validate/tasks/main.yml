@@ -1,0 +1,6 @@
+---
+- name: Prepare validation rules from data model into per node files.
+  template:
+   src: "templates/per-node-validate.j2"
+   dest: "{{ val_dir }}/automated-validation.yml"
+  changed_when: no

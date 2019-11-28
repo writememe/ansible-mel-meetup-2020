@@ -1,0 +1,9 @@
+{% set node = nodes[inventory_hostname] %}
+!
+hostname {{ node.hostname }}
+!
+ip domain-name {{ ip_domain_name }}
+!
+clock timezone {{ timezone }}
+!
+ip routing

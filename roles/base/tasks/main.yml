@@ -1,0 +1,5 @@
+---
+- name: Compiling base configuration
+  template:
+    src: "{{ os }}/base.j2"
+    dest: "{{ host_dir }}/00-base.conf"
