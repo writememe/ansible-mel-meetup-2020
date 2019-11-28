@@ -1,6 +1,6 @@
 ---
 # NAPALM and Python 3 workaround
-ansible_python_interpreter: ../venv/bin/python3.6
+ansible_python_interpreter: $VIRTUAL_ENV/bin/python3.6
 ip_domain_name: lab.dfjt.local
 ntp_servers:
   - 10.0.0.1
