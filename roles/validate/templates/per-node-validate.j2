@@ -41,4 +41,12 @@
         {{ interface.ip | ipaddr('address') }}:
           prefix_length: {{ interface.ip | ipaddr('prefix') }}
 {% endfor %}
-
+- get_lldp_neighbors_detail:
+{% for neighbor in node.neighbors %}
+{%   if node.os == 'junos' %}
+    {{ neighbor.local_interface }}.0:
+{%   elif node.os != 'junos' %}
+    {{ neighbor.local_interface }}:
+{%  endif %}
+    - remote_system_name: {{ neighbor.remote_system_name }}
+{% endfor %}

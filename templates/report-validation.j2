@@ -33,4 +33,10 @@ PASS
 {% else %}
 FAIL
 {% endif %}
+get_lldp_neighbors_detail - Compliance Check
+{% if val_results.compliance_report.get_lldp_neighbors_detail.complies|bool %}
+PASS
+{% else %}
+FAIL
+{% endif %}
 
