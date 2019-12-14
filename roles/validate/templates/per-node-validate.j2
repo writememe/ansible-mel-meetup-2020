@@ -30,6 +30,7 @@
       is_enabled: true
       is_up: true
 {% endfor %}
+{%  if node.os != 'nxos' %}
 - get_interfaces_ip:
 {% for interface in node.interfaces %}
 {%   if node.os == 'junos' %}
@@ -41,6 +42,7 @@
         {{ interface.ip | ipaddr('address') }}:
           prefix_length: {{ interface.ip | ipaddr('prefix') }}
 {% endfor %}
+{%  endif %}
 - get_lldp_neighbors_detail:
 {% for neighbor in node.neighbors %}
 {%   if node.os == 'junos' %}
