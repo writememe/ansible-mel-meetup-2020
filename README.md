@@ -33,7 +33,7 @@ Use the example provided in the repository to ensure you have the relevant infor
 
 The overall structure and dependencies of the project is shown in the diagram below:
 
-![Project Structure](https://github.com/writememe/ansible-mel-meetup-2020blob/master/diagrams/Network%20Automation%20Lifecycle%20Overview%20-%20v1.0.png)
+![Project Structure](https://github.com/writememe/ansible-mel-meetup-2020/blob/master/diagrams/Network%20Automation%20Lifecycle%20Overview%20-%20v1.0.png)
 
 This diagram is a good reference when inspecting playbooks and templates.
 
@@ -41,4 +41,4 @@ This diagram is a good reference when inspecting playbooks and templates.
 
 Below the demo environment used for this project:
 
-![Demo Environment](https://github.com/writememe/ansible-mel-meetup-2020blob/master/diagrams/Ansible%20Demo%20Network%20-%20Diagram%20-%20v1.1.png)
+![Demo Environment](https://github.com/writememe/ansible-mel-meetup-2020/blob/master/diagrams/Ansible%20Demo%20Network%20-%20Diagram%20-%20v1.1.png)
