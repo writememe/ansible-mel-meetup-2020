@@ -7,11 +7,10 @@
     build_dir: "compiled"
     deploy_dir: "deployed"
     debug_dir: "debugs"
-    hostname: "{{ inventory_hostname.split('.')[0] }}"
   tasks:
     - name: Set global facts
       set_fact:
-        host_dir: "{{ config_dir }}/{{ build_dir }}/{{ hostname }}"
+        host_dir: "{{ config_dir }}/{{ build_dir }}/{{ inventory_hostname }}"
         change_dir: "{{ config_dir }}/{{ deploy_dir }}"
         debug_deploy_dir: "{{ debug_dir }}/{{ deploy_dir }}"
       changed_when: false
@@ -74,10 +73,10 @@
         replace_config: false
         get_diffs: true
         commit_changes: true
-        diff_file: "{{ change_dir }}/{{ hostname }}-deployed-config-diff"
+        diff_file: "{{ change_dir }}/{{ inventory_hostname }}-deployed-config-diff"
       register: debug_deployment
     - name: Dump debug outputs for analysis, when requested
       copy:
         content: "{{ debug_deployment.msg }}"
-        dest: "{{ debug_deploy_dir }}/{{ hostname }}-{{ time }}.log"
+        dest: "{{ debug_deploy_dir }}/{{ inventory_hostname }}-{{ time }}.log"
       when: debug is defined

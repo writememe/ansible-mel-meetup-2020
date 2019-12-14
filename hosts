@@ -21,9 +21,7 @@ os=eos
 
 [nxos:vars]
 ansible_network_os=nxos
-# os=nxos
-# Toggle on for data-model-validate.yml
-os=nxos_ssh
+os=nxos
 
 [junos:vars]
 ansible_network_os=junos

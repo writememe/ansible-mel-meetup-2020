@@ -10,12 +10,7 @@ install:
   - napalm-ansible --version
 jobs:
   include:
-    - stage: env
-      name: Printout environment variables
-      script: env
-    - stage: yaml-lint
-      name: yamllint all YAML files
-      script: yamllint *.yml
-    - stage: ansible-lint
-      name: ansible-lint playbooks
-      script: ansible-lint *.yml
+    - name: Perform yamllint and ansible-lint
+      script:
+        - yamllint *.yml
+        - ansible-lint *.yml

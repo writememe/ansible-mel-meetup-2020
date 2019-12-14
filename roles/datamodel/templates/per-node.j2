@@ -8,6 +8,11 @@
  - ip: {{ ip }} 
         asn: {{ asn }}
         description: {{ description }}{% endmacro %}
+{% macro neighbor_link( local_int,remote_int,remote_sys_name ) %}
+ - local_interface: {{ local_int }}
+        remote_interface: {{ remote_int }}
+        remote_system_name: {{ remote_sys_name }}{% endmacro %}
+
 
 nodes:
 {% for node in nodes %}
@@ -60,6 +65,14 @@ nodes:
 {%    endif %}
 {%   endfor %}
 
+    neighbors:
+{%   for link in fabric %}
+{%    if link.left == node.name %}
+     {{ neighbor_link(link.left_port,link.right_port,link.right.split('.')[0]) }}
+{%    elif link.right == node.name %}
+     {{ neighbor_link(link.right_port,link.left_port,link.left.split('.')[0]) }}
+{%    endif %}
+{%   endfor %}
 
 {% endfor %}
 

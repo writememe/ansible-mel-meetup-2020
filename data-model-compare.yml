@@ -3,15 +3,14 @@
   hosts: all
   connection: local
   gather_facts: false
-  tags: ['build', 'vaidate']
+  tags: ['build', 'validate']
   vars:
       config_dir: "configs"
       build_dir: "compiled"
-      hostname: "{{ inventory_hostname.split('.')[0] }}"
   pre_tasks:
       - name: Set global facts, cleanup old files and directories
         set_fact:
-            host_dir: "{{ config_dir }}/{{ build_dir }}/{{ hostname }}"
+            host_dir: "{{ config_dir }}/{{ build_dir }}/{{ inventory_hostname }}"
         changed_when: false
         check_mode: true
       - name: Clearing old build configuration files
