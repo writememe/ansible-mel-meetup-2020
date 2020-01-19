@@ -11,7 +11,7 @@ help:
 		awk -F ':.*?## ' 'NF==2 {printf "\033[36m  %-25s\033[0m %s\n", $$1, $$2}'
 
 .PHONY: full-network-lifecycle
-full-network-lifecycle: ## Create, compare, deploy and validate data model
+full-network-lifecycle: ## Create, compare, deploy and validate data model (all playbooks).
 		@echo "^-^-^-^-^-^- CREATING DATA MODEL -^-^-^-^-^-^"
 		ansible-playbook create-data-model.yml
 		@echo "*********************************************"
