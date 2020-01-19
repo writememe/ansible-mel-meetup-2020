@@ -211,11 +211,16 @@ The command which is executed is:
 Whilst the pipeline is purely used for linting, it's a good idea to get into the practice of ensuring everyone's contribution
 meets some minimum standards before issuing pull requests.
 
-## Makefile - TO BE DOCUMENTED ##
+## Makefile
 
-The Makefile provides the following:
+The Makefile provides the following options:
 
+```makefile
 # make
   full-network-lifecycle    Create, compare, deploy and validate data model (all playbooks).
   linting-checks            Perform ansible-lint and yamllint on all files.
+```
 
+Follow the examples in the file to make more.
+
+Shoutout to Rick Donato for the [reference example(https://github.com/rickdonato/repo-template/blob/master/Makefile)
