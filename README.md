@@ -217,9 +217,13 @@ meets some minimum standards before issuing pull requests.
 The Makefile provides the following options:
 
 ```makefile
-# make
-  full-network-lifecycle    Create, compare, deploy and validate data model (all playbooks).
+  clean-dir                 Remove all automatically generated directories caused from playbooks.
+  deploy                    Deploy the applicable changes to the fabric, based on the design.
+  design                    Design the applicable changes to the fabric.
   linting-checks            Perform ansible-lint and yamllint on all files.
+  network-lifecycle         Plan, design, deploy and validate data model (all playbooks).
+  plan                      Create node-friendly data model from your fabric plan.
+  validate                  Validate the fabric solution.
 ```
 
 Follow the examples in the file to make more.
