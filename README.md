@@ -185,9 +185,10 @@ Each host either has passed or failed all it's compliance checks.
 
 Then, additional high-level information indicates which aspect of the validation had failed. For a detailed analysis, refer to the `reports/debug/`directory for the exact reason for non-compliance.
 
-## CI Pipeline - TO BE DOCUMENTED ##
+## CI Pipeline ##
 
-This module has a CI pipeline using [Travis CI](https://travis-ci.org/). Given that I have already performed validation testing using NAPALM Validate in [Module 4](https://github.com/writememe/BlgNetAutoSol/blob/master/4_Net_Configs_And_State), this CI pipeline will focus on ensuring all future changes to the project are automatically built and tested, when a pull request is created.
+This repository has a CI pipeline using [Travis CI](https://travis-ci.org/). 
+This CI pipeline will focus on ensuring all future changes to the project are automatically built and tested, when a pull request is created.
 
 The pipeline has two stages which are described in order below:
 
@@ -199,7 +200,7 @@ The command which is executed is:
 `yamllint *.yml`
 
 **NOTE: Line lengths have been modified from level of error to warning in this repository when they are over 80 characters in length.
-For more information, please refer to the [yamllint configuration file](https://github.com/writememe/ansible-mel-meetup-2020/blob/master/.yamllint.yaml)
+For more information, please refer to the [yamllint configuration file](https://github.com/writememe/ansible-mel-meetup-2020/blob/master/.yamllint.yaml)**
 
 ### Stage Two - ansible-lint ###
 
@@ -223,4 +224,4 @@ The Makefile provides the following options:
 
 Follow the examples in the file to make more.
 
-Shoutout to Rick Donato for the [reference example(https://github.com/rickdonato/repo-template/blob/master/Makefile)
+Shoutout to Rick Donato for the [reference example](https://github.com/rickdonato/repo-template/blob/master/Makefile)
