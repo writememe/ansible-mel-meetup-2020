@@ -8,3 +8,5 @@ dns_servers:
   - 8.8.8.8
 syslog_servers:
   - 10.0.0.101
+# NAPALM and Python 3 workaround
+ansible_python_interpreter: $VIRTUAL_ENV/bin/python3.7
