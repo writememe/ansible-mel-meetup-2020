@@ -9,7 +9,7 @@ This repository contains the code for the accompanying presentation at
  The following pre-requisites are required in order to use this project:
  
  - Git
- - Python 3.6 or greater
+ - Python 3.7.x
  
 ## Base Installation ##
 
